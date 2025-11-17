@@ -1,18 +1,26 @@
 import { Command } from 'commander';
 import Browser from './browser.js';
+import readline from 'readline';
 
 class CLI {
   constructor() {
     this.program = new Command();
     this.browser = new Browser();
     this.setupCommands();
+
+    this.rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      prompt: 'scraper>',
+    });
   }
 
   setupCommands() {
     this.program
       .name('web-scraper')
       .description('A CLI tool for web scraping with headless browsing')
-      .version('1.0.0');
+      .version('1.0.0')
+      .exitOverride();
 
     this.program
       .command('navigate <url>')
@@ -57,8 +65,8 @@ class CLI {
       });
 
     this.program
-      .command('close')
-      .description('Close the browser')
+      .command('exit')
+      .description('Close browser and exit')
       .action(async () => {
         try {
           await this.browser.close();
@@ -70,7 +78,28 @@ class CLI {
   }
 
   start() {
-    this.program.parse(process.argv);
+    console.log('Web Scraper CLI');
+    console.log('Type "help" for available commands\n');
+
+    this.rl.prompt();
+
+    this.rl.on('line', async (input) => {
+      const args = input.trim().split(' ');
+
+      if (args[0]) {
+        try {
+          await this.program.parseAsync(['node', 'scraper', ...args]);
+        } catch (error) {}
+      }
+
+      this.rl.prompt();
+    });
+
+    this.rl.on('close', async () => {
+      await this.browser.close();
+      console.log('\nGoodbye!');
+      process.exit(0);
+    });
   }
 }
 
