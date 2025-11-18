@@ -53,8 +53,15 @@ class CLI {
     this.program
       .command('capture <selector>')
       .description('Capture HTML using CSS selector')
-      .action((selector) => {
-        console.log(`Capturing element: ${selector}`);
+      .action(async (selector) => {
+        try {
+          const html = await this.browser.capture(selector);
+          console.log('\n--- Captured HTML ---\n');
+          console.log(html);
+          console.log('\n--- End of Captured HTML ---\n');
+        } catch (error) {
+          console.error(`Error: ${error.message}`);
+        }
       });
 
     this.program

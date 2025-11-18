@@ -30,6 +30,21 @@ class Browser {
     return await this.page.content();
   }
 
+  async capture(selector) {
+    if (!this.page) {
+      throw new Error('Browser not initialized');
+    }
+
+    const element = await this.page.$(selector);
+
+    if (!element) {
+      throw new Error(`Element not found: ${selector}`);
+    }
+
+    const html = await this.page.evaluate((el) => el.outerHTML, element);
+    return html;
+  }
+
   async close() {
     if (this.browser) {
       await this.browser.close();
