@@ -45,6 +45,21 @@ class Browser {
     return html;
   }
 
+  async click(selector) {
+    if (!this.page) {
+      throw new Error('Browser not initialized');
+    }
+
+    const element = await this.page.$(selector);
+
+    if (!element) {
+      throw new Error(`Element not found: ${selector}`);
+    }
+
+    await element.click();
+    console.log(`Clicked on: ${selector}`);
+  }
+
   async close() {
     if (this.browser) {
       await this.browser.close();

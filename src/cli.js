@@ -67,8 +67,12 @@ class CLI {
     this.program
       .command('click <selector>')
       .description('Click on element using CSS selector')
-      .action((selector) => {
-        console.log(`Clicking element: ${selector}`);
+      .action(async (selector) => {
+        try {
+          await this.browser.click(selector);
+        } catch (error) {
+          console.error(`Error: ${error.message}`);
+        }
       });
 
     this.program
