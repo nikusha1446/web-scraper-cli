@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import Browser from './browser.js';
 import readline from 'readline';
+import Utils from './utils.js';
 
 class CLI {
   constructor() {
@@ -32,7 +33,7 @@ class CLI {
           }
           await this.browser.navigate(url);
         } catch (error) {
-          console.error(`Error: ${error.message}`);
+          Utils.printError(error.message);
         }
       });
 
@@ -42,11 +43,9 @@ class CLI {
       .action(async () => {
         try {
           const html = await this.browser.getHTML();
-          console.log('\n--- HTML Code ---\n');
-          console.log(html);
-          console.log('\n--- End of HTML ---\n');
+          Utils.printHTML(html, 'Full Page HTML');
         } catch (error) {
-          console.error(`Error: ${error.message}`);
+          Utils.printError(error.message);
         }
       });
 
@@ -56,11 +55,9 @@ class CLI {
       .action(async (selector) => {
         try {
           const html = await this.browser.capture(selector);
-          console.log('\n--- Captured HTML ---\n');
-          console.log(html);
-          console.log('\n--- End of Captured HTML ---\n');
+          Utils.printHTML(html, `Captured: ${selector}`);
         } catch (error) {
-          console.error(`Error: ${error.message}`);
+          Utils.printError(error.message);
         }
       });
 
@@ -71,7 +68,7 @@ class CLI {
         try {
           await this.browser.click(selector);
         } catch (error) {
-          console.error(`Error: ${error.message}`);
+          Utils.printError(error.message);
         }
       });
 
@@ -83,15 +80,16 @@ class CLI {
           await this.browser.close();
           process.exit(0);
         } catch (error) {
-          console.error(`Error: ${error.message}`);
+          Utils.printError(error.message);
         }
       });
   }
 
   start() {
-    console.log('Web Scraper CLI');
+    console.log('\n' + '='.repeat(50));
+    console.log('  WEB SCRAPER CLI');
+    console.log('='.repeat(50));
     console.log('Type "help" for available commands\n');
-
     this.rl.prompt();
 
     this.rl.on('line', async (input) => {
